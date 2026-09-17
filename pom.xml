@@ -22,7 +22,7 @@
 
     <properties>
         <!-- Version du langage utilisée pour compiler ET exécuter -->
-        <java.version>25</java.version>
+        <java.version>17</java.version>
         <!-- Encodage explicite : evite les surprises entre Windows, macOS et la CI Linux -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

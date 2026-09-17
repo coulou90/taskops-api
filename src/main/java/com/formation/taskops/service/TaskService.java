@@ -6,7 +6,9 @@ import com.formation.taskops.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Couche metier. Elle isole les regles de gestion du controleur (HTTP)
@@ -25,6 +27,19 @@ public class TaskService {
      */
     public TaskService(TaskRepository repository) {
         this.repository = repository;
+    }
+
+    /**
+     * Compte les tâches par statut.
+     * Renvoie une Map ordonnée : TODO, IN_PROGRESS, DONE.
+     */
+    @Transactional(readOnly = true)
+    public Map<TaskStatus, Long> countByStatus() {
+        Map<TaskStatus, Long> resultat = new EnumMap<>(TaskStatus.class);
+        for (TaskStatus statut : TaskStatus.values()) {
+            resultat.put(statut, (long) repository.findByStatus(statut).size());
+        }
+        return resultat;
     }
 
     @Transactional(readOnly = true)

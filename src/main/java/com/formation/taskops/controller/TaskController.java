@@ -19,19 +19,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Couche d'exposition HTTP. Elle ne contient AUCUNE regle metier :
  * elle traduit du HTTP en appels de service, et des objets Java en JSON.
  */
-@RestController                        // @Controller + @ResponseBody : renvoie du JSON
-@RequestMapping("/api/tasks")          // prefixe commun a toutes les routes de la classe
+@RestController
+@RequestMapping("/api/tasks")
 public class TaskController {
 
     private final TaskService service;
 
     public TaskController(TaskService service) {
         this.service = service;
+    }
+
+    /** GET /api/tasks/stats -> répartition des tâches par statut */
+    @GetMapping("/stats")
+    public Map<TaskStatus, Long> stats() {
+        return service.countByStatus();
     }
 
     /** GET /api/tasks           -> toutes les taches
@@ -47,8 +54,7 @@ public class TaskController {
         return service.findById(id);
     }
 
-    /** POST /api/tasks -> 201 Created + en-tete Location pointant la ressource creee.
-     *  @Valid declenche la validation des annotations portees par Task. */
+    /** POST /api/tasks -> 201 Created + en-tete Location pointant la ressource creee. */
     @PostMapping
     public ResponseEntity<Task> create(@Valid @RequestBody Task task) {
         Task created = service.create(task);
@@ -63,7 +69,7 @@ public class TaskController {
         return service.update(id, task);
     }
 
-    /** DELETE /api/tasks/{id} -> 204 No Content (succes, pas de corps de reponse) */
+    /** DELETE /api/tasks/{id} -> 204 No Content */
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {

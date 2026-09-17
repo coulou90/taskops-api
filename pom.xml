@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Le "parent" fournit la gestion centralisée des versions de dépendances.
+         Grâce à lui, on n'écrit AUCUN numéro de version pour les starters Spring. -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/> <!-- va chercher le parent dans le dépôt Maven, pas sur le disque -->
+    </parent>
+
+    <!-- Coordonnées de NOTRE artefact : groupId:artifactId:version -->
+    <groupId>com.formation</groupId>
+    <artifactId>taskops-api</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>taskops-api</name>
+    <description>API REST de gestion de taches - projet fil rouge DevOps B3</description>
+
+    <properties>
+        <!-- Version du langage utilisée pour compiler ET exécuter -->
+        <java.version>25</java.version>
+        <!-- Encodage explicite : evite les surprises entre Windows, macOS et la CI Linux -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <!-- Serveur web embarque (Tomcat) + Spring MVC : permet d'exposer des controleurs REST.
+             ATTENTION : depuis Spring Boot 4.0, ce starter s'appelle "spring-boot-starter-webmvc".
+             Jusqu'a Spring Boot 3.x il s'appelait "spring-boot-starter-web" : la plupart
+             des tutoriels en ligne utilisent encore l'ancien nom. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+
+        <!-- Persistance : Spring Data JPA + Hibernate. Fournit les repositories automatiques -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+
+        <!-- Validation des donnees entrantes via les annotations @NotBlank, @Size, etc. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Base de donnees H2, en memoire. Portee "runtime" : utile a l'execution,
+             inutile a la compilation. Sera remplacee par PostgreSQL au Module 5. -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Boite a outils de test : JUnit 5 (Jupiter), AssertJ, Mockito, MockMvc.
+             Portee "test" : jamais embarquee dans le livrable. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Plugin Spring Boot : produit un JAR executable et fournit "mvn spring-boot:run" -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>

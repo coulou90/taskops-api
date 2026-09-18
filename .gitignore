@@ -35,3 +35,5 @@ build/
 ### Fichiers compilés (sécurité supplémentaire) ###
 *.class
 bin/
+# Fichier de routage Blue/Green local
+.active

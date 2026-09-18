@@ -39,8 +39,8 @@ class TaskServiceTest {
         Task resultat = service.create(nouvelle);
 
         assertThat(resultat.getTitle()).isEqualTo("Ecrire les tests");
-        assertThat(resultat.getStatus()).isEqualTo(TaskStatus.TODO);
         assertThat(resultat.getCreatedAt()).isNotNull();
+        assertThat(resultat.getStatus()).isEqualTo(TaskStatus.DONE);   // <-- FAUX volontairement
     }
 
     @Test

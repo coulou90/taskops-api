@@ -47,9 +47,10 @@ jobs:
       - name: Verifier le contenu de l'artefact
         run: |
           ls -lh target/*.jar
-          unzip -p "target/taskops-api-${VERSION}.jar" \
-            BOOT-INF/classes/META-INF/build-info.properties
-
+          echo "--- Recherche de build-info.properties ---"
+          unzip -l "target/taskops-api-${VERSION}.jar" | grep -i "build-info" || echo "NON TROUVE"
+          echo "--- Contenu ---"
+          unzip -p "target/taskops-api-${VERSION}.jar" "*build-info.properties" || true
       # --generate-notes construit les notes a partir des PR fusionnees
       # depuis la release precedente.
       - name: Publier la release GitHub

@@ -13,8 +13,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.formation.taskops.service.CanaryService;
 import java.util.List;
-
+import com.formation.taskops.service.CanaryService;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
@@ -36,6 +37,8 @@ class TaskControllerTest {
 
     @MockitoBean
     private TaskService service;
+    @MockitoBean
+    private CanaryService canary;
 
     @Test
     @DisplayName("GET /api/tasks renvoie 200 et la liste au format JSON")

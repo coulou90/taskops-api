@@ -1,0 +1,69 @@
+name: Release
+
+# QUAND : uniquement lors du push d'un tag commencant par "v"
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Ce workflow doit CREER une release : il lui faut le droit d'ecriture.
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Construire et publier la release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # historique complet : necessaire aux notes de version
+
+      - name: Installer Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # Le tag "v1.1.0" doit produire la version Maven "1.1.0" : on retire le "v".
+      # GITHUB_ENV rend la variable disponible dans les steps SUIVANTS.
+      - name: Deduire la version depuis le tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "Version deduite : $VERSION"
+
+      # versions:set reecrit <version> dans le pom.
+      - name: Fixer la version dans le pom
+        run: bash mvnw -B versions:set -DnewVersion="${VERSION}" -DgenerateBackupPoms=false
+
+      # On RECONSTRUIT ET RETESTE : l'artefact publie doit etre issu
+      # d'un build complet et verifie.
+      - name: Construire l'artefact
+        run: bash mvnw -B clean verify
+
+      - name: Verifier le contenu de l'artefact
+        run: |
+          ls -lh target/*.jar
+          unzip -p "target/taskops-api-${VERSION}.jar" \
+            BOOT-INF/classes/META-INF/build-info.properties
+
+      # --generate-notes construit les notes a partir des PR fusionnees
+      # depuis la release precedente.
+      - name: Publier la release GitHub
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            "target/taskops-api-${VERSION}.jar" \
+            --title "TaskOps API ${GITHUB_REF_NAME}" \
+            --generate-notes
+
+      - name: Conserver l'artefact comme artefact de workflow
+        uses: actions/upload-artifact@v4
+        with:
+          name: taskops-api-${{ env.VERSION }}
+          path: target/taskops-api-${{ env.VERSION }}.jar
+          retention-days: 30

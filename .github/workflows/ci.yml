@@ -1,0 +1,49 @@
+name: CI
+
+# QUAND : a chaque push sur main et a chaque PR ciblant main
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Droits minimaux : ce workflow n'a besoin que de lire le code
+permissions:
+  contents: read
+
+# Si deux commits sont pousses coup sur coup, la premiere execution est annulee
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: Build & tests
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Recuperer le code
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      # 2. Installer Java 17 (Temurin) avec cache Maven
+      - name: Installer Java 17 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      # 3. Compiler + tester + rapport JaCoCo
+      - name: Construire et tester
+        run: ./mvnw -B verify
+
+      # 4. Publier les rapports, meme si les tests echouent
+      - name: Publier les rapports de tests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapports-tests
+          path: |
+            target/surefire-reports/
+            target/site/jacoco/
+          retention-days: 7

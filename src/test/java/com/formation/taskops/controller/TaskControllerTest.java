@@ -16,17 +16,15 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * Test de TRANCHE WEB : Spring ne demarre que la couche MVC.
- * Pas de base de donnees, pas de serveur Tomcat, pas de TaskService reel.
- */
 @WebMvcTest(TaskController.class)
 class TaskControllerTest {
 
@@ -36,10 +34,6 @@ class TaskControllerTest {
     @Autowired
     private JsonMapper objectMapper;
 
-    /**
-     * @MockitoBean remplace le bean TaskService du contexte Spring par un mock.
-     * Depuis Spring Boot 4, @MockBean n'existe plus.
-     */
     @MockitoBean
     private TaskService service;
 
@@ -103,5 +97,22 @@ class TaskControllerTest {
         mockMvc.perform(get("/api/tasks").param("status", "DONE"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isEmpty());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/tasks/{id} renvoie 204 quand la tache existe")
+    void delete_renvoie204() throws Exception {
+        mockMvc.perform(delete("/api/tasks/5"))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @DisplayName("DELETE /api/tasks/{id} renvoie 404 quand la tache est absente")
+    void delete_renvoie404SiAbsente() throws Exception {
+        doThrow(new TaskNotFoundException(99L)).when(service).delete(99L);
+
+        mockMvc.perform(delete("/api/tasks/99"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.status").value(404));
     }
 }

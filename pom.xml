@@ -27,41 +27,40 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    
     <dependencies>
-        <!-- Serveur web embarque (Tomcat) + Spring MVC : permet d'exposer des controleurs REST.
-             ATTENTION : depuis Spring Boot 4.0, ce starter s'appelle "spring-boot-starter-webmvc".
-             Jusqu'a Spring Boot 3.x il s'appelait "spring-boot-starter-web" : la plupart
-             des tutoriels en ligne utilisent encore l'ancien nom. -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-webmvc</artifactId>
-        </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-webmvc</artifactId>
+    </dependency>
 
-        <!-- Persistance : Spring Data JPA + Hibernate. Fournit les repositories automatiques -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
+    <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <scope>runtime</scope>
+    </dependency>
 
-        <!-- Validation des donnees entrantes via les annotations @NotBlank, @Size, etc. -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-validation</artifactId>
-        </dependency>
-
-        <!-- Base de donnees H2, en memoire. Portee "runtime" : utile a l'execution,
-             inutile a la compilation. Sera remplacee par PostgreSQL au Module 5. -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-
-        <!-- Boite a outils de test : JUnit 5 (Jupiter), AssertJ, Mockito, MockMvc.
-             Portee "test" : jamais embarquee dans le livrable. -->
-        <dependency>
+            <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
